@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"usercontrol/src/server/http"
+	"usercontrol/src/server/tcp"
+)
 
 func main() {
-	fmt.Println("Hello World!")
+	go tcp.Run()
+	http.Run()
 }
