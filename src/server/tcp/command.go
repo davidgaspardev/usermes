@@ -3,7 +3,8 @@ package tcp
 type commandID int
 
 const (
-	CMD_RECORD commandID = iota
+	CMD_REGISTER commandID = iota
+	CMD_RECORD
 )
 
 type _Command struct {

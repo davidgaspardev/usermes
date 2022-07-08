@@ -7,7 +7,7 @@ import (
 )
 
 func Run() {
-	listener, err := net.Listen("tcp", ":8888")
+	listener, err := net.Listen("tcp", "0.0.0.0:8888")
 	if err != nil {
 		golog.Error("TCP", err)
 	}

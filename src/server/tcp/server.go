@@ -9,7 +9,7 @@ import (
 )
 
 type _Server struct {
-	clients  map[net.Addr]*_Client
+	clients  map[[40]byte]*_Client
 	commands chan _Command
 	orders   chan []byte
 }
@@ -19,7 +19,7 @@ var server *_Server
 func getServer() *_Server {
 	if server == nil {
 		server = &_Server{
-			clients:  make(map[net.Addr]*_Client),
+			clients:  make(map[[40]byte]*_Client),
 			commands: make(chan _Command),
 			orders:   make(chan []byte),
 		}
@@ -38,6 +38,14 @@ func (server *_Server) run() {
 	for {
 		command := <-server.commands
 		log.Info("TCP Server", fmt.Sprint(command))
+
+		switch command.id {
+		case CMD_REGISTER:
+			// Register raspberry
+			server.registerClient(command.client)
+		case CMD_RECORD:
+			// Record signal
+		}
 	}
 }
 
@@ -62,10 +70,15 @@ func (server *_Server) connectClient(conn net.Conn) {
 		command: server.commands,
 	}
 
-	// Add
-	server.clients[client.conn.RemoteAddr()] = client
-
 	if err := client.listen(); err != nil {
-		delete(server.clients, client.conn.RemoteAddr())
+		server.unregisterClient(client)
 	}
+}
+
+func (server *_Server) registerClient(client *_Client) {
+	server.clients[client.hash] = client
+}
+
+func (server *_Server) unregisterClient(client *_Client) {
+	delete(server.clients, client.hash)
 }
